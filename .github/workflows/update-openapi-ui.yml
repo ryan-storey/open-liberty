@@ -33,7 +33,11 @@ jobs:
       run: |
         git clone --depth 1 -b v${SWAGGER_UI_VERSION} https://github.com/swagger-api/swagger-ui.git swagger-ui-src
         rm src/style/original/*
+        rm src/style/core/plugins/json-schema-2020-12/components/*
+        rm src/style/core/plugins/oas31/components/*
         cp swagger-ui-src/src/style/* src/style/original
+        cp -r swagger-ui-src/src/core/plugins/json-schema-2020-12/components/* src/style/core/plugins/json-schema-2020-12/components
+        cp -r swagger-ui-src/src/core/plugins/oas31/components/* src/style/core/plugins/oas31/components
         rm -r swagger-ui-src
     - name: Build OpenAPI UI
       run: npm run build -- --mode=production
