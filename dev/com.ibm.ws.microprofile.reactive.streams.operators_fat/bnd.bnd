@@ -63,10 +63,10 @@ tested.features: mpReactiveStreams-1.0, \
 	com.ibm.websphere.org.eclipse.microprofile.rest.client.1.1;version=latest,\
 	com.ibm.websphere.org.eclipse.microprofile.config.1.3;version=latest,\
 	com.ibm.websphere.org.eclipse.microprofile.contextpropagation.1.0;version=latest,\
-	com.ibm.websphere.org.reactivestreams.reactive-streams.1.0, \
+	com.ibm.websphere.org.reactivestreams.reactive-streams.1.0,\
 	com.ibm.websphere.javaee.annotation.1.3;version=latest,\
 	com.ibm.websphere.javaee.concurrent.1.0;version=latest,\
 	com.ibm.websphere.javaee.cdi.2.0;version=latest,\
-        io.openliberty.org.apache.commons.logging;version=latest,\
-        io.openliberty.org.apache.commons.codec;version=latest
+	io.openliberty.org.apache.commons.logging;version=latest,\
+	io.openliberty.org.apache.commons.codec;version=latest
 	

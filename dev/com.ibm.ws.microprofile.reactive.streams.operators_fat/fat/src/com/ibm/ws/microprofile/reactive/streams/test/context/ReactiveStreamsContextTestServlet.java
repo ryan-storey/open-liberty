@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 IBM Corporation and others.
+ * Copyright (c) 2019, 2024 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -34,11 +34,14 @@ import java.util.stream.Collectors;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.annotation.WebServlet;
 
 import org.eclipse.microprofile.reactive.streams.operators.ProcessorBuilder;
 import org.eclipse.microprofile.reactive.streams.operators.PublisherBuilder;
 import org.eclipse.microprofile.reactive.streams.operators.ReactiveStreams;
+import org.eclipse.microprofile.reactive.streams.operators.spi.ReactiveStreamsEngine;
 import org.junit.Test;
 
 import componenttest.annotation.SkipForRepeat;
@@ -67,6 +70,9 @@ public class ReactiveStreamsContextTestServlet extends FATServlet {
 
     @Inject
     ThreadContextBean threadContextBean;
+
+    @Inject
+    ReactiveStreamsEngine injectedEngine;
 
     /*
      * Another simple test that plumbs a list to Subscriber
@@ -246,6 +252,28 @@ public class ReactiveStreamsContextTestServlet extends FATServlet {
                         .thenApply((x) -> threadContextBean.getConfigValueFromInjectedBean());
         latch.complete(null);
         CompletionStageResult.from(result).assertResult(is("foobar"));
+    }
+
+    @Test
+    public void testEngine() throws Exception {
+        ReactiveStreams.of(1, 2, 3, 4)
+                        .map(this::testContext)
+                        .collect(Collectors.toList())
+                        .run(injectedEngine)
+                        .toCompletableFuture()
+                        .get();
+    }
+
+    private int testContext(int i) {
+        // Expect failure here if application context is not propagated:
+        BeanManager bm = null;
+        try {
+            bm = (BeanManager) new InitialContext().lookup("java:comp/BeanManager");
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(bm);
+        return i;
     }
 
     private <T> Function<T, T> blockingWaitFor(Future<?> latch) {
