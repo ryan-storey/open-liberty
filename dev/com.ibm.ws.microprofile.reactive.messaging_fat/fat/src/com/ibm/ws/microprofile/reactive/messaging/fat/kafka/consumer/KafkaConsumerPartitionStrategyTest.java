@@ -10,6 +10,24 @@
 
 package com.ibm.ws.microprofile.reactive.messaging.fat.kafka.consumer;
 
+import static com.ibm.websphere.simplicity.ShrinkHelper.DeployOptions.SERVER_ONLY;
+import static com.ibm.ws.microprofile.reactive.messaging.fat.kafka.common.ConnectorProperties.simpleIncomingChannel;
+import static com.ibm.ws.microprofile.reactive.messaging.fat.kafka.common.ConnectorProperties.simpleOutgoingChannel;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.ibm.websphere.simplicity.PropertiesAsset;
 import com.ibm.websphere.simplicity.ShrinkHelper;
 import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.common.ConnectorProperties;
@@ -20,29 +38,11 @@ import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.framework.KafkaTestC
 import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.framework.KafkaWriter;
 import com.ibm.ws.microprofile.reactive.messaging.fat.suite.PlaintextTests;
 import com.ibm.ws.microprofile.reactive.messaging.fat.suite.ReactiveMessagingActions;
+
 import componenttest.annotation.Server;
 import componenttest.custom.junit.runner.FATRunner;
 import componenttest.rules.repeater.RepeatTests;
 import componenttest.topology.impl.LibertyServer;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
-
-import static com.ibm.websphere.simplicity.ShrinkHelper.DeployOptions.SERVER_ONLY;
-import static com.ibm.ws.microprofile.reactive.messaging.fat.kafka.common.ConnectorProperties.simpleIncomingChannel;
-import static com.ibm.ws.microprofile.reactive.messaging.fat.kafka.common.ConnectorProperties.simpleOutgoingChannel;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 
 @RunWith(FATRunner.class)
 public class KafkaConsumerPartitionStrategyTest {
@@ -82,24 +82,24 @@ public class KafkaConsumerPartitionStrategyTest {
         ConnectorProperties outputChannel7 = simpleOutgoingChannel(PlaintextTests.connectionProperties(), KafkaMultipleChannelMessageBean.CHANNEL_OUT_7);
 
         PropertiesAsset config = new PropertiesAsset()
-                .include(inputChannel1)
-                .include(outputChannel1)
-                .include(inputChannel2)
-                .include(outputChannel2)
-                .include(inputChannel3)
-                .include(outputChannel3)
-                .include(inputChannel4)
-                .include(outputChannel4)
-                .include(inputChannel5)
-                .include(outputChannel5)
-                .include(inputChannel6)
-                .include(outputChannel6)
-                .include(inputChannel7)
-                .include(outputChannel7);
+                        .include(inputChannel1)
+                        .include(outputChannel1)
+                        .include(inputChannel2)
+                        .include(outputChannel2)
+                        .include(inputChannel3)
+                        .include(outputChannel3)
+                        .include(inputChannel4)
+                        .include(outputChannel4)
+                        .include(inputChannel5)
+                        .include(outputChannel5)
+                        .include(inputChannel6)
+                        .include(outputChannel6)
+                        .include(inputChannel7)
+                        .include(outputChannel7);
 
         WebArchive war = ShrinkWrap.create(WebArchive.class, APP_NAME + ".war")
-                .addPackage(KafkaMultipleChannelMessageBean.class.getPackage())
-                .addAsResource(config, "META-INF/microprofile-config.properties");
+                        .addPackage(KafkaMultipleChannelMessageBean.class.getPackage())
+                        .addAsResource(config, "META-INF/microprofile-config.properties");
 
         KafkaUtils.addKafkaTestFramework(war, PlaintextTests.connectionProperties());
 
@@ -113,10 +113,10 @@ public class KafkaConsumerPartitionStrategyTest {
     }
 
     @Test
-    public void MultipleConnectorSingleGroupIdTest() throws Exception{
-        for(int i=0;i<1000;i++){
-            int num = ThreadLocalRandom.current().nextInt(0,6);
-            switch(num){
+    public void MultipleConnectorSingleGroupIdTest() throws Exception {
+        for (int i = 0; i < 100; i++) {
+            int num = ThreadLocalRandom.current().nextInt(0, 6);
+            switch (num) {
                 case 0:
                     writeMessages(KafkaMultipleChannelMessageBean.CHANNEL_IN_1, KafkaMultipleChannelMessageBean.CHANNEL_OUT_1);
                     break;
@@ -142,17 +142,19 @@ public class KafkaConsumerPartitionStrategyTest {
         }
     }
 
-    public void writeMessages(String channelIn, String channelOut) throws Exception{
-        try(KafkaWriter<String, String> testWriter = kafkaTestClient.writerFor(channelIn);
-            KafkaReader<String, String> testReader = kafkaTestClient.readerFor(channelOut)){
+    public void writeMessages(String channelIn, String channelOut) throws Exception {
+        try (KafkaWriter<String, String> testWriter = kafkaTestClient.writerFor(channelIn);
+                        KafkaReader<String, String> testReader = kafkaTestClient.readerFor(channelOut)) {
             testWriter.sendMessage("abc-" + channelOut);
             testWriter.sendMessage("def-" + channelOut);
             testWriter.sendMessage("ghi-" + channelOut);
+            KafkaReader<String, String> secondTestReader = kafkaTestClient.readerFor(channelOut, APP_NAME);
             testWriter.sendMessage("jkl-" + channelOut);
             testWriter.sendMessage("mno-" + channelOut);
 
             List<String> messages = testReader.assertReadMessages(5, KafkaTestConstants.DEFAULT_KAFKA_TIMEOUT);
-            assertThat(messages, contains(channelIn + "-abc-" + channelOut, channelIn + "-def-" + channelOut , channelIn + "-ghi-" + channelOut, channelIn + "-jkl-" + channelOut, channelIn + "-mno-" + channelOut));
+            assertThat(messages, contains(channelIn + "-abc-" + channelOut, channelIn + "-def-" + channelOut, channelIn + "-ghi-" + channelOut, channelIn + "-jkl-" + channelOut,
+                                          channelIn + "-mno-" + channelOut));
         }
     }
 

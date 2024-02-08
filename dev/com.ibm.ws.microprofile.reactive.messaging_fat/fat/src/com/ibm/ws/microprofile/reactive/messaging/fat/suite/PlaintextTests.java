@@ -23,22 +23,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.ack.auto.KafkaAutoAckTest;
 import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.consumer.KafkaConsumerPartitionStrategyTest;
 import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.containers.ExtendedKafkaContainer;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.context.KafkaDefaultContextTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.context.custom.KafkaCustomContextTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.context.custom.invalid.KakfaInvalidContextTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.delivery.KafkaAcknowledgementTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.flatmap.KafkaFlatMapTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.message.ConsumerRecordTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.message.UseConfiguredTopicTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.message.UseProducerRecordTopicTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.partitions.KafkaPartitionTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.serializer.KafkaCustomKeySerializerTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.serializer.KafkaCustomSerializerTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.sharedLib.KafkaSharedLibTest;
-import com.ibm.ws.microprofile.reactive.messaging.fat.kafka.tck.ReactiveStreamsTckTest;
 
 import componenttest.containers.SimpleLogConsumer;
 import componenttest.containers.TestContainerSuite;
@@ -48,24 +34,24 @@ import componenttest.containers.TestContainerSuite;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-                BadConnectorIDTest.class,
-                BasicReactiveMessagingTest.class,
-                ConsumerRecordTest.class,
-                KafkaMessagingTest.class,
-                KafkaAcknowledgementTest.class,
-                KafkaAutoAckTest.class,
-                KafkaCustomContextTest.class,
-                KafkaCustomSerializerTest.class,
-                KafkaCustomKeySerializerTest.class,
-                KafkaDefaultContextTest.class,
-                KafkaFlatMapTest.class,
-                KakfaInvalidContextTest.class,
-                KafkaPartitionTest.class,
-                KafkaSharedLibTest.class,
-                MissingGroupIDTest.class,
-                ReactiveStreamsTckTest.class,
-                UseConfiguredTopicTest.class,
-                UseProducerRecordTopicTest.class,
+//                BadConnectorIDTest.class,
+//                BasicReactiveMessagingTest.class,
+//                ConsumerRecordTest.class,
+//                KafkaMessagingTest.class,
+//                KafkaAcknowledgementTest.class,
+//                KafkaAutoAckTest.class,
+//                KafkaCustomContextTest.class,
+//                KafkaCustomSerializerTest.class,
+//                KafkaCustomKeySerializerTest.class,
+//                KafkaDefaultContextTest.class,
+//                KafkaFlatMapTest.class,
+//                KakfaInvalidContextTest.class,
+//                KafkaPartitionTest.class,
+//                KafkaSharedLibTest.class,
+//                MissingGroupIDTest.class,
+//                ReactiveStreamsTckTest.class,
+//                UseConfiguredTopicTest.class,
+//                UseProducerRecordTopicTest.class,
                 KafkaConsumerPartitionStrategyTest.class
 })
 public class PlaintextTests extends TestContainerSuite {

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
@@ -95,6 +95,20 @@ public class KafkaTestClient {
     }
 
     /**
+     * Obtain a KafkaReader for the given topic name
+     * <p>
+     * The returned reader expects String messages and uses the {@value #TEST_GROUPID} consumer group
+     *
+     * Once and instance of KafkaReader is no longer needed. It must be closed either via KafkaTestClient.cleanup() or KafkaReader.close()
+     *
+     * @param topicName the topic to read from
+     * @return the reader
+     */
+    public KafkaReader<String, String> readerFor(String topicName, String groupId) {
+        return readerFor(Collections.emptyMap(), topicName, groupId);
+    }
+
+    /**
      * Obtain a KafkaReader configured with the given consumer config
      * <p>
      * The following properties will be added with default values if they are not set in {@code config}
@@ -113,12 +127,34 @@ public class KafkaTestClient {
      * @return the reader
      */
     public KafkaReader<String, String> readerFor(Map<String, Object> config, String topicName) {
+        return readerFor(config, topicName, TEST_GROUPID);
+    }
+
+    /**
+     * Obtain a KafkaReader configured with the given consumer config
+     * <p>
+     * The following properties will be added with default values if they are not set in {@code config}
+     * <ul>
+     * <li>the connectionProperties</li>
+     * <li>{@value ConsumerConfig#KEY_DESERIALIZER_CLASS_CONFIG} = StringDeserializer</li>
+     * <li>{@value ConsumerConfig#VALUE_DESERIALIZER_CLASS_CONFIG} = StringDeserializer</li>
+     * <li>{@value ConsumerConfig#GROUP_ID_CONFIG} = {@value #TEST_GROUPID}</li>
+     * <li>{@value ConsumerConfig#AUTO_OFFSET_RESET_CONFIG} = earliest</li>
+     * </ul>
+     *
+     * Once and instance of KafkaReader is no longer needed. It must be closed either via KafkaTestClient.cleanup() or KafkaReader.close()
+     *
+     * @param config    the consumer config
+     * @param topicName the topic to subscribe to
+     * @return the reader
+     */
+    public KafkaReader<String, String> readerFor(Map<String, Object> config, String topicName, String groupId) {
         // Set up defaults
         HashMap<String, Object> localConfig = new HashMap<>(config);
         localConfig.putAll(connectionProperties);
         localConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         localConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        localConfig.put(ConsumerConfig.GROUP_ID_CONFIG, TEST_GROUPID);
+        localConfig.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         localConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         // Add in provided config (which will overwrite any defaults)
